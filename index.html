@@ -815,11 +815,8 @@
         </div>
       </div>
 
-      <!-- Formspree: sign up free at formspree.io, create a form, paste your ID below -->
+      <!-- Formsubmit.co: free, no account needed. First submission activates via email confirmation. -->
       <form class="contact-form" id="contactForm">
-        <!-- Formspree redirect-back to same page -->
-        <input type="hidden" name="_subject" value="New Delta AI Inquiry" />
-        <input type="hidden" name="_next" value="" id="formNext" />
         <div class="form-row">
           <div class="form-group">
             <label>First Name</label>
@@ -1015,10 +1012,7 @@ document.querySelectorAll('.service-card,.team-card,.research-card,.process-step
   observer.observe(el);
 });
 
-/* Contact form — Formspree AJAX (free: formspree.io, 50 submissions/month) */
-var FORMSPREE_ID = 'YOUR_FORM_ID'; /* <-- paste your Formspree form ID here after signup */
-document.getElementById('formNext').value = window.location.href;
-
+/* Contact form — Formsubmit.co (100% free, no account, unlimited submissions) */
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
   var btn = document.getElementById('submitBtn');
@@ -1028,14 +1022,18 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
   btn.disabled = true;
 
   var data = new FormData(form);
+  data.append('_subject', 'New Delta AI Inquiry from ' + (data.get('first_name') || '') + ' ' + (data.get('last_name') || ''));
+  data.append('_captcha', 'false');
+  data.append('_template', 'table');
 
-  fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+  fetch('https://formsubmit.co/ajax/muxiddin1979@gmail.com', {
     method: 'POST',
     body: data,
     headers: { 'Accept': 'application/json' }
   })
-  .then(function(res) {
-    if (res.ok) {
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success === 'true' || data.success === true) {
       btn.textContent = 'Message Sent!';
       btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
       btn.style.boxShadow = '0 0 32px rgba(16,185,129,.4)';
@@ -1047,15 +1045,17 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         btn.disabled = false;
       }, 4000);
     } else {
-      btn.textContent = 'Error — try emailing us directly';
-      btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
-      btn.disabled = false;
+      throw new Error('failed');
     }
   })
   .catch(function() {
-    btn.textContent = 'Error — try emailing us directly';
+    btn.textContent = 'Error — email us: muxiddin1979@gmail.com';
     btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
-    btn.disabled = false;
+    setTimeout(function() {
+      btn.textContent = 'Send Message →';
+      btn.style.background = '';
+      btn.disabled = false;
+    }, 5000);
   });
 });
 </script>
